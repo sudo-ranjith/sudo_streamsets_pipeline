@@ -13,7 +13,7 @@ services:
         SDC_LIBS: streamsets-datacollector-apache-kafka_2_0-lib,streamsets-datacollector-cdh_5_16-lib,streamsets-datacollector-jython_2_7-lib,streamsets-datacollector-jdbc-lib
         SDC_CONF_http_authentication: form
     ports:
-      - 18630:18630
+      - 8080:18630
     environment:
       - JVM_OPTS=-Xmx10240m -Xms10240m -XX:MaxPermSize=6024m
     volumes:
@@ -26,7 +26,7 @@ services:
   db:
     image: postgres
     ports:
-      - 8080:5432
+      - 5432:5432
     volumes:
       - ./data/db:/var/lib/postgresql/data
       - .:/docker-entrypoint-initdb.d/
