@@ -1,0 +1,43 @@
+version: '3'
+services:
+  python3:
+    image: python:3
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /python:/usr/local/lib/python3.9/
+  streamsets:
+    build:
+      context: "."
+      args:
+        SDC_LIBS: streamsets-datacollector-apache-kafka_2_0-lib,streamsets-datacollector-cdh_5_16-lib,streamsets-datacollector-jython_2_7-lib,streamsets-datacollector-jdbc-lib
+        SDC_CONF_http_authentication: form
+    ports:
+      - 18630:18630
+    environment:
+      - JVM_OPTS=-Xmx10240m -Xms10240m -XX:MaxPermSize=6024m
+    volumes:
+      - ./sdc-data:/data
+      - ./python:/python
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - streamsets-network
+
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - .:/docker-entrypoint-initdb.d/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - APP_DB_USER=test3
+      - APP_DB_PASS=postgres
+      - APP_DB_NAME=test3
+    networks:
+       - streamsets-network
+networks:
+  streamsets-network:
+    driver: bridge
